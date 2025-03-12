@@ -1,7 +1,11 @@
+load("@rules_java//java:defs.bzl", "JavaInfo")
+
 def _jbr_rule_impl(ctx):
     jbr_files = ctx.files.jbr_files
-    test_jar = ctx.file.test_jar
-    print(test_jar.short_path)
+
+    java_info = ctx.attr.test_jar[JavaInfo]
+    test_jar = java_info.outputs.jars[0].class_jar
+
     java_exe = None
     for file in jbr_files:
         if file.basename == "java.exe":
@@ -24,11 +28,10 @@ def _jbr_rule_impl(ctx):
     launch_info.add(java_exe.short_path, format = "java_bin_path=%s")
     launch_info.add(ctx.attr.main_class, format = "java_start_class=%s")
     launch_info.add(ctx.file.test_jar.short_path, format = "classpath=%s")
-    #launch_info.add_joined(jvm_flags_for_launcher, join_with = "\t", format_joined = "jvm_flags=%s", omit_if_empty = False)
-    #launch_info.add(semantics.find_java_runtime_toolchain(ctx).java_home_runfiles_path, format = "jar_bin_path=%s/bin/jar.exe")
-
+    launch_info.add_joined(ctx.attr.jvm_flags, join_with = "\t", format_joined = "jvm_flags=%s", omit_if_empty = False)
+    
     launcher_artifact = ctx.executable._launcher
-    # Use Bazel's launcher_maker
+    
     ctx.actions.run(
         executable = ctx.executable._launcher_maker,
         outputs = [executable],
@@ -48,6 +51,7 @@ jbr_rule = rule(
     executable = True,
     attrs = {
         "jbr_files": attr.label(allow_files = True, mandatory = True),
+        "jvm_flags": attr.string_list(),
         "main_class": attr.string(mandatory = True),
         "test_jar": attr.label(allow_single_file = True, mandatory = True),
         "_launcher": attr.label(

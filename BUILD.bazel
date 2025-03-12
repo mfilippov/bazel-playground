@@ -6,9 +6,10 @@ java_library(
     srcs = ["src/Main.java"]
 )
 
+
 jbr_rule(
     name = "test_launcher",
     main_class = "Main",
     jbr_files = "@jbr_jcef_21_windows_x64//:jbr_files",
-    test_jar = "//:test_lib/libtest_lib.jar",
+    test_jar = ":test_lib",
 )
