@@ -1,1 +1,1 @@
-bazelisk --batch run --java_runtime_version=remotejdk_21 //:test_launcher
+bazelisk --batch run --java_runtime_version=remotejdk_21 //:test_launcher -- 1 2 3
