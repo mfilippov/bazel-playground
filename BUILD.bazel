@@ -1,0 +1,8 @@
+load("//:jbr_rule.bzl", "jbr_rule")
+
+
+jbr_rule(
+    name = "show_version",
+    jbr_files = "@jbr_jcef_21_windows_x64//:jbr_files",
+    params = ["-version"],
+)
