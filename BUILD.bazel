@@ -1,8 +1,14 @@
 load("//:jbr_rule.bzl", "jbr_rule")
+load("@rules_java//java:java_library.bzl", "java_library")
 
+java_library(
+    name = "test_lib",
+    srcs = ["src/Main.java"]
+)
 
 jbr_rule(
-    name = "show_version",
+    name = "test_launcher",
+    main_class = "Main",
     jbr_files = "@jbr_jcef_21_windows_x64//:jbr_files",
-    params = ["-version"],
+    test_jar = "//:test_lib/libtest_lib.jar",
 )
